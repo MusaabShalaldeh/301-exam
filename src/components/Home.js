@@ -1,12 +1,59 @@
 import React from 'react';
+import axios from 'axios';
+import {Row} from 'react-bootstrap';
+import HomeItem from './ItemComponents/HomeItem'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 class Home extends React.Component {
+
+  constructor(props){
+    super(props);
+
+    this.state={
+      itemsArr: [],
+    }
+  }
+
+  componentDidMount=()=>{
+    const url = 'http://localhost:3010/getFruits'
+
+    axios
+    .get(url)
+    .then(result=>{
+      this.setState({
+        itemsArr: result.data.fruits,
+      })
+      console.log(this.state.itemsArr);
+    })
+    .catch(err=>{
+      console.log(err);
+    })
+  }
+
+  addToFavoritesCollection=(object)=>{
+    
+    const url = 'http://localhost:3010/addToFavorites';
+
+    axios
+    .post(url,object)
+    .then(result=>{
+      console.log('added to favorites correctly!');
+    })
+    .catch(err=>{
+      console.log(err);
+    })
+
+  }
 
   render() {
     return (
       <>
         <h1>API Fruits</h1>
+        <Row>
+          {this.state.itemsArr.length > 0 &&this.state.itemsArr.map(item=>{
+            return (<HomeItem item={item} addToFavoritesCollection={this.addToFavoritesCollection}/>);
+          })}
+        </Row>
       </>
     )
   }
